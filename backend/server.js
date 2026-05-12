@@ -94,6 +94,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const path = require("path");
+const Book = require('./models/Book');
 require("dotenv").config();
 
 const http = require("http");
@@ -135,7 +136,6 @@ app.use("/api/users", require("./routes/user"));
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // 👇 FIX 2: frontend
-const Book = require('./models/Book');
 const path = require('path');
 
 // Khi Root Directory là 'backend', __dirname chính là thư mục backend
