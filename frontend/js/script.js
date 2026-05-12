@@ -1,6 +1,6 @@
-const API = "window.location.origin/api/books";
-const CATEGORY_API = "window.location.origin/api/categories";
-const IMAGE_BASE_URL = "window.location.origin";
+const API = window.location.origin + "/api/books";
+const CATEGORY_API = window.location.origin + "/api/categories";
+const IMAGE_BASE_URL = window.location.origin; // Không có dấu ngoặc kép
 
 // =========================
 // GLOBAL STATE
