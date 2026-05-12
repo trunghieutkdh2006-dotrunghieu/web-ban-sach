@@ -1,0 +1,1398 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hệ thống Quản trị - BookStore</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #1D3557;
+            --secondary: #457B9D;
+            --danger: #E63946;
+            --light: #F1FAEE;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            display: flex;
+            background: #f4f7f6;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: 250px;
+            height: 100vh;
+            background: var(--primary);
+            color: white;
+            position: fixed;
+            top: 0;
+            left: 0;
+            display: flex;
+            flex-direction: column;
+            padding-top: 20px;
+            z-index: 100;
+        }
+
+        .sidebar h2 {
+            text-align: center;
+            font-size: 18px;
+            margin-bottom: 30px;
+            padding: 0 15px;
+        }
+
+        .sidebar a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: rgba(255, 255, 255, 0.85);
+            padding: 14px 24px;
+            text-decoration: none;
+            transition: 0.25s ease;
+            border-left: 4px solid transparent;
+            font-size: 14px;
+        }
+
+        .sidebar a:hover,
+        .sidebar a.active {
+            background: rgba(255, 255, 255, 0.08);
+            border-left: 4px solid #A8DADC;
+            color: white;
+        }
+
+        .sidebar a.active {
+            background: rgba(255, 255, 255, 0.16);
+            font-weight: 600;
+        }
+
+        .sidebar i {
+            width: 18px;
+            text-align: center;
+        }
+
+        .sidebar .sidebar-bottom {
+            margin-top: auto;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 10px;
+        }
+
+        /* MAIN */
+        .main-content {
+            margin-left: 250px;
+            flex: 1;
+            padding: 32px;
+            min-height: 100vh;
+            background: #eef4f8;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            letter-spacing: -0.03em;
+            margin: 0;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            color: var(--primary);
+            margin: 0;
+        }
+
+        .admin-badge {
+            background: var(--primary);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        #books .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+            margin-bottom: 18px;
+        }
+
+        #books input,
+        #books textarea,
+        #books select {
+            width: 100%;
+            padding: 13px 15px;
+            border: 1px solid #dbe3ea;
+            border-radius: 12px;
+            font-size: 14px;
+            background: #fff;
+            color: #333;
+            outline: none;
+            transition: 0.25s;
+        }
+
+        #books input:focus,
+        #books textarea:focus,
+        #books select:focus {
+            border-color: #457B9D;
+            box-shadow: 0 0 0 4px rgba(69, 123, 157, 0.15);
+        }
+
+        #books input::placeholder,
+        #books textarea::placeholder {
+            color: #9aa5b1;
+        }
+
+        #books textarea {
+            resize: vertical;
+            min-height: 120px;
+            line-height: 1.6;
+        }
+
+        #books label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #52606d;
+        }
+
+        /* STATS */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-item {
+            background: white;
+            padding: 26px 22px;
+            border-radius: 18px;
+            text-align: center;
+            border: 1px solid rgba(66, 86, 122, 0.12);
+            box-shadow: 0 16px 35px rgba(15, 23, 42, 0.08);
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        .stat-item:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 24px 48px rgba(15, 23, 42, 0.14);
+        }
+
+        .stat-item h4 {
+            margin: 0 0 14px;
+            color: #6b7280;
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .stat-item p {
+            font-size: 32px;
+            font-weight: 700;
+            margin: 0;
+            color: var(--primary);
+        }
+
+        /* CARD */
+        .card {
+            background: white;
+            padding: 28px;
+            border-radius: 22px;
+            box-shadow: 0 20px 45px rgba(15, 23, 42, 0.07);
+            margin-bottom: 34px;
+            scroll-margin-top: 30px;
+            border: 1px solid rgba(15, 23, 42, 0.05);
+        }
+
+        .card h3 {
+            margin-top: 0;
+            color: var(--primary);
+            border-bottom: 1px solid #e5e9f1;
+            padding-bottom: 14px;
+            font-size: 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* FORM */
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        input,
+        textarea {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+            transition: 0.2s;
+        }
+
+        input:focus,
+        textarea:focus {
+            border-color: var(--primary);
+        }
+
+        .btn {
+            cursor: pointer;
+            border: none;
+            padding: 12px 18px;
+            border-radius: 12px;
+            font-weight: 700;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #1D3557, #457B9D);
+            color: white;
+            border: 1px solid transparent;
+            box-shadow: 0 12px 24px rgba(29, 53, 87, 0.12);
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #1b3f6c, #3f6f98);
+        }
+
+        .btn-secondary {
+            background: #f8fafc;
+            color: #1f2937;
+            border: 1px solid #dbe3ea;
+        }
+
+        .btn-secondary:hover {
+            background: #edf2f7;
+        }
+
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+            padding: 12px 16px;
+            border-radius: 12px;
+            font-size: 14px;
+            box-shadow: 0 10px 18px rgba(239, 68, 68, 0.16);
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 10px;
+            border-radius: 9999px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-done {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-cancelled {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        /* TABLE */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th,
+        td {
+            padding: 13px 12px;
+            text-align: left;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 14px;
+        }
+
+        th {
+            background: #f8f9fa;
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        tbody tr:hover {
+            background: #f8faff;
+        }
+
+        .role-badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .role-admin {
+            background: #FFD700;
+            color: #333;
+        }
+
+        .role-user {
+            background: #E1E8ED;
+            color: #666;
+        }
+
+        /* CATEGORY GRID */
+        .category-list {
+            display: grid;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .category-card {
+            background: #ffffff;
+            border-radius: 22px;
+            border: 1px solid rgba(15, 23, 42, 0.06);
+            box-shadow: 0 18px 40px rgba(15, 23, 42, 0.04);
+            padding: 22px;
+        }
+
+        .category-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 18px;
+            flex-wrap: wrap;
+            margin-bottom: 18px;
+        }
+
+        .category-top h4 {
+            margin: 0;
+            font-size: 18px;
+            color: var(--primary);
+        }
+
+        .category-top p {
+            margin: 6px 0 0;
+            color: #6b7280;
+            font-size: 13px;
+        }
+
+        .category-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .category-books {
+            display: grid;
+            gap: 10px;
+        }
+
+        .category-book-item {
+            display: grid;
+            grid-template-columns: 1fr auto auto;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 16px;
+            border-radius: 14px;
+            background: #f8fafc;
+            border: 1px solid #e6ecf2;
+        }
+
+        .category-book-item span:first-child {
+            color: #111827;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .category-book-item span:nth-child(2) {
+            color: #475569;
+            font-size: 13px;
+            text-align: right;
+        }
+
+        .category-book-item .book-item-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            align-items: center;
+        }
+
+        .category-book-item .book-item-actions .btn {
+            padding: 8px 12px;
+            font-size: 13px;
+            border-radius: 10px;
+            min-width: auto;
+        }
+
+        .category-card .empty-subtext {
+            color: #64748b;
+            font-size: 13px;
+            padding: 12px 14px;
+            border-radius: 14px;
+            background: #f8fafc;
+        }
+
+        @media(max-width: 760px) {
+            .category-top {
+                flex-direction: column;
+                align-items: stretch;
+            }
+        }
+
+        /* BOOK LIST */
+        #bookList {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 16px;
+            margin-top: 20px;
+        }
+
+        .book-admin-card {
+            display: grid;
+            grid-template-rows: auto 1fr auto;
+            gap: 14px;
+            padding: 18px;
+            border-radius: 18px;
+            background: linear-gradient(180deg, #ffffff 0%, #f7fbff 100%);
+            border: 1px solid rgba(69, 123, 157, 0.12);
+            box-shadow: 0 18px 36px rgba(15, 23, 42, 0.06);
+        }
+
+        .book-admin-card img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            border-radius: 16px;
+        }
+
+        .book-admin-card h4 {
+            font-size: 16px;
+            margin: 0;
+            line-height: 1.3;
+            min-height: 3rem;
+        }
+
+        .book-admin-card p {
+            font-size: 13px;
+            color: #556170;
+            margin: 0;
+            line-height: 1.5;
+        }
+
+        .book-admin-card .price {
+            color: var(--primary);
+            font-weight: 700;
+            margin-top: 4px;
+        }
+
+        .book-admin-card .card-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+            padding-top: 4px;
+        }
+
+        .book-admin-card .card-actions .btn {
+            flex: 1 1 48%;
+            padding: 12px 10px;
+            border-radius: 14px;
+            font-size: 13px;
+        }
+
+        /* ===== SELECT THỂ LOẠI ===== */
+        #bCategory {
+            appearance: none;
+            cursor: pointer;
+
+            background-image:
+                linear-gradient(45deg, transparent 50%, #457B9D 50%),
+                linear-gradient(135deg, #457B9D 50%, transparent 50%);
+            background-position:
+                calc(100% - 18px) calc(50% - 3px),
+                calc(100% - 12px) calc(50% - 3px);
+            background-size: 6px 6px;
+            background-repeat: no-repeat;
+        }
+
+        #bCategory:hover {
+            border-color: #457B9D;
+        }
+
+        #bCategory:focus {
+            border-color: #457B9D;
+            box-shadow: 0 0 0 4px rgba(69, 123, 157, 0.15);
+        }
+
+        #bImg {
+            padding: 10px;
+            background: #fff;
+            border: 2px dashed #cbd5e1;
+            cursor: pointer;
+        }
+
+        #bImg:hover {
+            border-color: #457B9D;
+            background: #f8fbff;
+        }
+
+        #books .action-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        /* OPTION */
+        #bCategory option {
+            padding: 10px;
+            color: #333;
+        }
+
+        .btn {
+            border: none;
+            border-radius: 12px;
+            padding: 13px 18px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.25s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #1D3557, #457B9D);
+            color: white;
+            box-shadow: 0 4px 14px rgba(29, 53, 87, 0.18);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(29, 53, 87, 0.25);
+            background: linear-gradient(135deg, #1D3557, #457B9D);
+        }
+
+        .btn-secondary {
+            background: #eef3f8;
+            color: #1D3557;
+            border: 1px solid #d6e0ea;
+        }
+
+        .btn-secondary:hover {
+            background: #dde7f0;
+        }
+
+        #books h3 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 20px;
+            margin-bottom: 24px;
+            color: #1D3557;
+        }
+
+        @media(max-width: 768px) {
+
+            #books .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            #books .action-group {
+                flex-direction: column;
+            }
+
+        }
+    </style>
+</head>
+
+<body onload="initDashboard()">
+    <div class="sidebar">
+        <h2><i class="fas fa-book-open"></i> ADMIN PANEL</h2>
+
+        <a href="#dashboard" class="active" onclick="setActive(this)">
+            <i class="fas fa-chart-line"></i> Dashboard
+        </a>
+        <a href="#books" onclick="setActive(this)">
+            <i class="fas fa-book"></i> Quản lý sách
+        </a>
+        <a href="#categories" onclick="setActive(this)">
+            <i class="fas fa-tags"></i> Quản lý danh mục
+        </a>
+        <a href="#orders" onclick="setActive(this)">
+            <i class="fas fa-box"></i> Quản lý đơn hàng
+        </a>
+        <a href="users.html" target="_blank" onclick="setActive(this)">
+            <i class="fas fa-users"></i> Quản lý người dùng
+        </a>
+
+        <div class="sidebar-bottom">
+            <a href="index.html" style="color: #A8DADC;">
+                <i class="fas fa-external-link-alt"></i> Xem trang chủ
+            </a>
+            <a href="#" onclick="logout()" style="color: #E63946;">
+                <i class="fas fa-sign-out-alt"></i> Đăng xuất
+            </a>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="header">
+            <h1>Tổng quan hệ thống</h1>
+            <div class="admin-badge" id="adminName">Chào, Quản trị viên</div>
+        </div>
+
+        <!-- STATS -->
+        <div id="dashboard" class="stats-grid">
+            <div class="stat-item">
+                <h4>📚 Tổng số sách</h4>
+                <p id="totalBooks">--</p>
+            </div>
+            <div class="stat-item">
+                <h4>👥 Người dùng</h4>
+                <p id="totalUsers">--</p>
+            </div>
+            <div class="stat-item">
+                <h4>⭐ Review</h4>
+                <p id="totalReviews">--</p>
+            </div>
+        </div>
+
+        <!-- QUẢN LÝ SÁCH -->
+        <div id="books" class="card">
+
+            <h3>
+                <i class="fas fa-plus-circle"></i>
+                Thêm sách mới
+            </h3>
+
+            <div class="form-row">
+                <input type="text" id="bTitle" placeholder="Tên sách">
+                <input type="text" id="bAuthor" placeholder="Tác giả">
+            </div>
+
+            <div class="form-row">
+                <input type="number" id="bPrice" placeholder="Giá tiền">
+
+                <div>
+                    <label style="font-size:13px;color:#666;margin-bottom:6px;display:block">
+                        Ảnh bìa sách
+                    </label>
+
+                    <input type="file" id="bImg" accept="image/*">
+                </div>
+
+                <div>
+                    <label style="font-size:13px;color:#666;margin-bottom:6px;display:block">
+                        File PDF đọc thử
+                    </label>
+
+                    <input type="file" id="bPdf" accept="application/pdf">
+                    <div id="currentPdfInfo" style="margin-top:8px; font-size:13px; color:#555; display:none;">
+                        Đang có file đọc thử: <a id="currentPdfLink" href="#" target="_blank">Xem</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-row">
+
+                <div>
+                    <label style="font-size:13px;color:#666;margin-bottom:6px;display:block">
+                        Thể loại
+                    </label>
+
+                    <select id="bCategory">
+                        <option value="">Chọn thể loại</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label style="font-size:13px;color:#666;margin-bottom:6px;display:block">
+                        Thể loại mới
+                    </label>
+
+                    <input type="text" id="newCategory" placeholder="Nhập thể loại mới">
+                </div>
+
+            </div>
+
+            <textarea id="bDesc" placeholder="Mô tả sách" style="height:120px;margin-bottom:18px"></textarea>
+
+            <div class="action-group">
+
+                <button class="btn btn-primary" id="bookFormSubmit" onclick="addBook()">
+                    <i class="fas fa-save"></i>
+                    LƯU SÁCH
+                </button>
+
+                <button class="btn btn-secondary" id="cancelBookEditButton" onclick="resetBookForm()"
+                    style="display:none">
+                    HỦY
+                </button>
+
+            </div>
+
+            <!-- DANH SÁCH -->
+            <h3 style="margin-top:35px">
+                <i class="fas fa-book"></i>
+                Danh sách sách
+            </h3>
+
+            <div id="bookList"></div>
+
+        </div>
+
+        <!-- THỂ LOẠI -->
+        <div id="categories" class="card">
+
+            <h3>
+                <i class="fas fa-tags"></i>
+                Quản lý danh mục
+            </h3>
+
+            <div class="form-row">
+
+                <input type="text" id="categoryName" placeholder="Tên danh mục">
+
+                <div style="display:flex;gap:10px">
+
+                    <button class="btn btn-primary" id="categoryFormSubmit" onclick="addCategory()">
+                        Thêm danh mục
+                    </button>
+
+                    <button class="btn btn-secondary" id="cancelCategoryEditButton" onclick="resetCategoryForm()"
+                        style="display:none">
+                        Hủy
+                    </button>
+
+                </div>
+
+            </div>
+
+            <div class="category-list" id="categoryList">
+                <div class="empty-state" style="padding:24px 0; color:#667085; text-align:center; width:100%;">
+                    Danh sách thể loại sẽ xuất hiện ở đây.
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ĐƠN HÀNG -->
+        <div id="orders" class="card">
+
+            <h3>
+                <i class="fas fa-box"></i>
+                Quản lý đơn hàng
+            </h3>
+
+            <table>
+
+                <thead>
+                    <tr>
+                        <th>Mã đơn</th>
+                        <th>Khách hàng</th>
+                        <th>Ngày</th>
+                        <th>Tổng</th>
+                        <th>Trạng thái</th>
+                        <th>Hành động</th>
+                    </tr>
+                </thead>
+
+                <tbody id="orderAdminList"></tbody>
+
+            </table>
+
+        </div>
+
+        <!-- NGƯỜI DÙNG -->
+        <div id="users" class="card">
+
+            <h3>
+                <i class="fas fa-users"></i>
+                Danh sách người dùng
+            </h3>
+
+            <table>
+
+                <thead>
+                    <tr>
+                        <th>Tên</th>
+                        <th>Email</th>
+                        <th>Vai trò</th>
+                        <th>Thao tác</th>
+                    </tr>
+                </thead>
+
+                <tbody id="userList"></tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+    <script>
+        const BASE_URL = "http://localhost:5001/api";
+        const SERVER_URL = "http://localhost:5001";
+        let editingBookId = null;
+        let editingCategoryId = null;
+
+        // ✅ Highlight menu active
+        function setActive(el) {
+            document.querySelectorAll('.sidebar a').forEach(a => a.classList.remove('active'));
+            el.classList.add('active');
+        }
+
+        // ✅ Auto highlight khi scroll
+        window.addEventListener('scroll', () => {
+            const sections = ['dashboard', 'books', 'categories', 'orders', 'users'];
+            let current = 'dashboard';
+            let minDiff = Infinity;
+
+            sections.forEach(id => {
+                const el = document.getElementById(id);
+                if (!el) return;
+
+                const diff = Math.abs(window.scrollY - el.offsetTop);
+                if (diff < minDiff) {
+                    minDiff = diff;
+                    current = id;
+                }
+            });
+            document.querySelectorAll('.sidebar a[href^="#"]').forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === '#' + current) link.classList.add('active');
+            });
+        });
+
+        // ✅ Kiểm tra quyền admin
+        const checkAdminAuth = () => {
+            const user = JSON.parse(localStorage.getItem('user'));
+            if (!user || user.role !== 'admin') {
+                alert("Bạn không có quyền admin!");
+                window.location.href = "index.html";
+                return false;
+            }
+            document.getElementById('adminName').innerText = `Chào, ${user.username || 'Admin'}`;
+            return true;
+        };
+
+        async function initDashboard() {
+            if (!checkAdminAuth()) return;
+            resetBookForm();
+            resetCategoryForm();
+
+            try {
+                const [resUser, resBooks, resRev, resCategories, resOrders] = await Promise.all([
+                    fetch(`${BASE_URL}/users`),
+                    fetch(`${BASE_URL}/books`),
+                    fetch(`${BASE_URL}/reviews`),
+                    fetch(`${BASE_URL}/categories`),
+                    fetch(`${BASE_URL}/orders`)
+                ]);
+
+                const users = await resUser.json();
+                const books = await resBooks.json();
+                const reviews = await resRev.json();
+                const categories = await resCategories.json();
+                const orders = await resOrders.json();
+
+                document.getElementById('totalUsers').innerText = users.length;
+                document.getElementById('totalBooks').innerText = books.length;
+                document.getElementById('totalReviews').innerText = reviews.length;
+
+                renderUsers(users);
+                renderBooks(books);
+                renderCategories(categories, books);
+                renderAdminOrders(orders);
+                populateCategorySelect(categories);
+            } catch (err) {
+                console.error("Lỗi:", err);
+                alert("Không thể kết nối đến máy chủ.");
+            }
+        }
+
+        // ✅ Render danh sách sách
+        function renderBooks(books) {
+            const container = document.getElementById("bookList");
+
+            if (!books || books.length === 0) {
+                container.innerHTML = '<p style="color:#888;text-align:center">Chưa có sách nào.</p>';
+                return;
+            }
+
+            container.innerHTML = books.map(b => {
+                const img = b.image
+                    ? (b.image.startsWith('http') ? b.image : `http://localhost:5001${b.image}`)
+                    : 'https://via.placeholder.com/200x160?text=No+Image';
+
+                return `
+        <div class="book-admin-card">
+            <img src="${img}" onerror="this.src='https://via.placeholder.com/200x160?text=No+Image'"/>
+
+            <h4>${b.title || ''}</h4>
+            <p>${b.author || ''}</p>
+
+            <p style="font-size:12px;color:#666">
+                ${b.description ? b.description.replace(/\n/g, "<br>") : 'Không có mô tả'}
+            </p>
+
+            <p>
+                ${b.category ? `<strong>Thể loại:</strong> ${b.category}` : '<em>Chưa có thể loại</em>'}
+            </p>
+
+            <p class="price">${Number(b.price || 0).toLocaleString()}đ</p>
+
+            <div class="card-actions">
+                <button class="btn btn-secondary" onclick="editBook('${b._id}')">
+                    <i class="fas fa-edit"></i> Sửa
+                </button>
+                <button class="btn btn-danger" onclick="deleteBook('${b._id}')">
+                    <i class="fas fa-trash"></i> Xoá
+                </button>
+            </div>
+        </div>
+        `;
+            }).join('');
+        }
+
+        function populateCategorySelect(categories) {
+            const select = document.getElementById('bCategory');
+            if (!select) return;
+            select.innerHTML = '<option value="">Chọn thể loại</option>' + categories.map(cat =>
+                `<option value="${cat.name}">${cat.name}</option>`
+            ).join('');
+        }
+
+        function renderCategories(categories, books = []) {
+            const container = document.getElementById('categoryList');
+            if (!container) return;
+            if (!categories || !categories.length) {
+                container.innerHTML = '<div class="empty-state">Chưa có thể loại nào.</div>';
+                return;
+            }
+
+            container.innerHTML = categories.map(cat => {
+                const categoryBooks = books.filter(b => String(b.category || '').toLowerCase() === String(cat.name || '').toLowerCase());
+                return `
+                    <div class="category-card">
+                        <div class="category-top">
+                            <div>
+                                <h4>${cat.name}</h4>
+                                <p>${categoryBooks.length} sách thuộc thể loại này</p>
+                            </div>
+                            <div class="category-actions">
+                                <button class="btn btn-secondary" onclick="editCategory('${cat._id}', '${cat.name.replace(/'/g, "\\'")}')">Sửa</button>
+                                <button class="btn btn-danger" onclick="deleteCategory('${cat._id}')">Xóa</button>
+                            </div>
+                        </div>
+                        <div class="category-books">
+                            ${categoryBooks.length ? categoryBooks.map(book => `
+                                <div class="category-book-item">
+                                    <span>${book.title || 'Sách không tên'}</span>
+                                    <span>${Number(book.price || 0).toLocaleString()}đ</span>
+                                    <div class="book-item-actions">
+                                        <button class="btn btn-danger" onclick="deleteBook('${book._id}')">Xóa</button>
+                                    </div>
+                                </div>
+                            `).join('') : '<p class="empty-subtext">Hiện chưa có sách nào trong thể loại này.</p>'}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        async function addCategory() {
+            const nameInput = document.getElementById('categoryName');
+            const name = nameInput.value.trim();
+            if (!name) return alert('Vui lòng nhập tên thể loại.');
+            if (editingCategoryId) return updateCategory();
+
+            try {
+                const res = await fetch(`${BASE_URL}/categories`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name })
+                });
+                const result = await res.json();
+                if (!res.ok) return alert(result.message || 'Không thể thêm thể loại.');
+
+                nameInput.value = '';
+                await initDashboard();
+                alert('Đã thêm thể loại thành công!');
+            } catch (err) {
+                console.error(err);
+                alert('Lỗi kết nối server.');
+            }
+        }
+
+        function resetCategoryForm() {
+            editingCategoryId = null;
+            document.getElementById('categoryName').value = '';
+            document.getElementById('categoryFormSubmit').textContent = 'Thêm thể loại';
+            document.getElementById('cancelCategoryEditButton').style.display = 'none';
+        }
+
+        async function editCategory(id, name) {
+            editingCategoryId = id;
+            document.getElementById('categoryName').value = name;
+            document.getElementById('categoryFormSubmit').textContent = 'CẬP NHẬT THỂ LOẠI';
+            document.getElementById('cancelCategoryEditButton').style.display = 'inline-flex';
+        }
+
+        async function deleteCategory(id) {
+            if (!confirm('Bạn có chắc muốn xóa thể loại này?')) return;
+            try {
+                const res = await fetch(`${BASE_URL}/categories/${id}`, { method: 'DELETE' });
+                if (res.ok) {
+                    await initDashboard();
+                } else {
+                    const data = await res.json();
+                    alert(data.message || 'Xóa thể loại thất bại.');
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Lỗi kết nối server.');
+            }
+        }
+
+        async function updateCategory() {
+            const nameInput = document.getElementById('categoryName');
+            const name = nameInput.value.trim();
+            if (!name) return alert('Vui lòng nhập tên thể loại.');
+            try {
+                const res = await fetch(`${BASE_URL}/categories/${editingCategoryId}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name })
+                });
+                const result = await res.json();
+                if (!res.ok) return alert(result.message || 'Không thể cập nhật thể loại.');
+                resetCategoryForm();
+                await initDashboard();
+                alert('Cập nhật thể loại thành công!');
+            } catch (err) {
+                console.error(err);
+                alert('Lỗi kết nối server.');
+            }
+        }
+
+        async function ensureCategoryExists(name) {
+            if (!name) return;
+            try {
+                const res = await fetch(`${BASE_URL}/categories`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name })
+                });
+                if (!res.ok) {
+                    const data = await res.json();
+                    if (data.message && data.message.includes('đã tồn tại')) return;
+                    console.warn('Không thể tạo thể loại:', data.message || 'Lỗi');
+                }
+            } catch (err) {
+                console.warn('Lỗi khi tạo thể loại tự động:', err);
+            }
+        }
+
+        function renderAdminOrders(orders) {
+            const tbody = document.getElementById('orderAdminList');
+            if (!orders || !orders.length) {
+                tbody.innerHTML = '<tr><td colspan="6" style="color:#888;text-align:center;">Chưa có đơn hàng nào.</td></tr>';
+                return;
+            }
+            tbody.innerHTML = orders.map(order => {
+                const createdAt = order.createdAt ? new Date(order.createdAt).toLocaleString('vi-VN') : '';
+                const total = Number(order.totalPrice || order.total || 0).toLocaleString('vi-VN');
+                const userName = order.userId && typeof order.userId === 'object'
+                    ? (order.userId.username || order.userId.email || 'Khách')
+                    : (order.userId || 'Khách');
+                const status = order.status || 'Đang xử lý';
+                const statusLabel = status === 'Đã hủy' ? 'status-cancelled' : (status === 'Hoàn thành' ? 'status-done' : 'status-pending');
+                return `
+                    <tr>
+                        <td>#${order._id || order.id || '---'}</td>
+                        <td>${createdAt}</td>
+                        <td>${userName}</td>
+                        <td>${total}đ</td>
+                        <td><span class="status-badge ${statusLabel}">${status}</span></td>
+                        <td>
+                            <button class="btn btn-primary" style="margin-right:4px;" onclick="updateOrderStatus('${order._id}', 'Đang giao')">Đang giao</button>
+                            <button class="btn btn-primary" style="margin-right:4px;" onclick="updateOrderStatus('${order._id}', 'Hoàn thành')">Hoàn thành</button>
+                            <button class="btn btn-danger" onclick="cancelOrderAdmin('${order._id}')">Huỷ</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        async function updateOrderStatus(orderId, status) {
+            try {
+                const res = await fetch(`${BASE_URL}/orders/${orderId}`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status })
+                });
+                if (!res.ok) {
+                    const data = await res.json();
+                    return alert(data.message || 'Cập nhật trạng thái thất bại.');
+                }
+                await initDashboard();
+                alert('Đã cập nhật trạng thái đơn hàng.');
+            } catch (err) {
+                console.error(err);
+                alert('Lỗi kết nối server.');
+            }
+        }
+
+        async function cancelOrderAdmin(orderId) {
+            if (!confirm('Bạn có chắc muốn hủy đơn hàng này?')) return;
+            try {
+                const res = await fetch(`${BASE_URL}/orders/${orderId}/cancel`, { method: 'PATCH' });
+                if (!res.ok) {
+                    const data = await res.json();
+                    return alert(data.message || 'Huỷ đơn hàng thất bại.');
+                }
+                await initDashboard();
+                alert('Đơn hàng đã được huỷ.');
+            } catch (err) {
+                console.error(err);
+                alert('Lỗi kết nối server.');
+            }
+        }
+
+        // ✅ Render danh sách user
+        function renderUsers(users) {
+            const tbody = document.getElementById("userList");
+            tbody.innerHTML = users.map(u => `
+                <tr>
+                    <td><b>${u.username || 'Không tên'}</b></td>
+                    <td>${u.email}</td>
+                    <td><span class="role-badge ${u.role === 'admin' ? 'role-admin' : 'role-user'}">${u.role || 'user'}</span></td>
+                    <td><button class="btn-danger" onclick="deleteUser('${u._id}')"><i class="fas fa-trash"></i></button></td>
+                </tr>
+            `).join('');
+        }
+
+        // ✅ Thêm sách — fix đúng field price và image
+        async function addBook() {
+            if (editingBookId) {
+                return updateBook(editingBookId);
+            }
+            const title = document.getElementById('bTitle').value.trim();
+            const price = parseInt(document.getElementById('bPrice').value);
+            if (!title || !price) return alert("Vui lòng nhập tên và giá sách!");
+
+            const formData = new FormData();
+            formData.append('title', title);
+            formData.append('author', document.getElementById('bAuthor').value.trim());
+            formData.append('price', price);
+            formData.append('description', document.getElementById('bDesc').value.trim());
+            const newCategoryInput = document.getElementById('newCategory').value.trim();
+            const selectedCategory = document.getElementById('bCategory').value;
+            const categoryValue = newCategoryInput || selectedCategory;
+            if (newCategoryInput) {
+                await ensureCategoryExists(newCategoryInput);
+            }
+            if (categoryValue) {
+                formData.append('category', categoryValue);
+            }
+            const imageInput = document.getElementById('bImg');
+            const samplePdfInput = document.getElementById('bPdf');
+            if (imageInput.files[0]) {
+                formData.append('image', imageInput.files[0]);
+            }
+            if (samplePdfInput.files[0]) {
+                formData.append('samplePdf', samplePdfInput.files[0]);
+            }
+
+            try {
+                const res = await fetch(`${BASE_URL}/books/add`, {
+                    method: 'POST',
+                    body: formData  // Không đặt Content-Type khi dùng FormData
+                });
+                if (res.ok) {
+                    alert("Đã thêm sách thành công! ✅");
+                    resetBookForm();
+                    initDashboard();
+                } else {
+                    const err = await res.json();
+                    alert("Lỗi: " + (err.message || "Không xác định"));
+                }
+            } catch (err) { alert("Lỗi kết nối server."); }
+        }
+
+        async function editBook(id) {
+            try {
+                const res = await fetch(`${BASE_URL}/books/${id}`);
+                const book = await res.json();
+                if (!res.ok) return alert(book.message || 'Không thể lấy thông tin sách.');
+
+                editingBookId = id;
+                document.getElementById('bTitle').value = book.title || '';
+                document.getElementById('bAuthor').value = book.author || '';
+                document.getElementById('bPrice').value = book.price || '';
+                document.getElementById('bDesc').value = book.description || '';
+                document.getElementById('newCategory').value = '';
+                if (book.category) document.getElementById('bCategory').value = book.category;
+                else document.getElementById('bCategory').value = '';
+
+                if (book.samplePdf) {
+                    document.getElementById('currentPdfLink').href = `${SERVER_URL}${book.samplePdf}`;
+                    document.getElementById('currentPdfLink').textContent = 'Xem file PDF đọc thử';
+                    document.getElementById('currentPdfInfo').style.display = 'block';
+                } else {
+                    document.getElementById('currentPdfLink').href = '#';
+                    document.getElementById('currentPdfLink').textContent = 'Xem';
+                }
+
+                document.getElementById('bookFormSubmit').innerHTML = '<i class="fas fa-save"></i> CẬP NHẬT SÁCH';
+                document.getElementById('cancelBookEditButton').style.display = 'inline-flex';
+                window.scrollTo({ top: document.getElementById('books').offsetTop - 20, behavior: 'smooth' });
+            } catch (err) {
+                console.error(err);
+                alert('Lỗi kết nối server.');
+            }
+        }
+
+        async function updateBook(id) {
+            const title = document.getElementById('bTitle').value.trim();
+            const price = parseInt(document.getElementById('bPrice').value);
+            if (!title || !price) return alert("Vui lòng nhập tên và giá sách!");
+
+            const formData = new FormData();
+            formData.append('title', title);
+            formData.append('author', document.getElementById('bAuthor').value.trim());
+            formData.append('price', price);
+            formData.append('description', document.getElementById('bDesc').value.trim());
+            const newCategoryInput = document.getElementById('newCategory').value.trim();
+            const selectedCategory = document.getElementById('bCategory').value;
+            let categoryValue = '';
+
+            if (newCategoryInput) {
+                categoryValue = newCategoryInput;
+                await ensureCategoryExists(newCategoryInput);
+            } else {
+                categoryValue = selectedCategory;
+            }
+            if (categoryValue) {
+                formData.append('category', categoryValue);
+            }
+            const imageInput = document.getElementById('bImg');
+            const samplePdfInput = document.getElementById('bPdf');
+            if (imageInput.files[0]) {
+                formData.append('image', imageInput.files[0]);
+            }
+            if (samplePdfInput.files[0]) {
+                formData.append('samplePdf', samplePdfInput.files[0]);
+            }
+
+            try {
+                let res;
+                if (imageInput.files[0] || samplePdfInput.files[0]) {
+                    res = await fetch(`${BASE_URL}/books/${id}`, {
+                        method: 'PUT',
+                        body: formData
+                    });
+                } else {
+                    const payload = {
+                        title,
+                        author: document.getElementById('bAuthor').value.trim(),
+                        price,
+                        description: document.getElementById('bDesc').value.trim()
+                    };
+                    if (categoryValue) payload.category = categoryValue;
+                    res = await fetch(`${BASE_URL}/books/${id}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                }
+                const result = await res.json();
+                if (!res.ok) return alert(result.message || 'Cập nhật sách thất bại.');
+                alert('Cập nhật sách thành công!');
+                resetBookForm();
+                await initDashboard();
+            } catch (err) {
+                console.error(err);
+                alert('Lỗi kết nối server.');
+            }
+        }
+
+        function resetBookForm() {
+            editingBookId = null;
+            document.getElementById('bTitle').value = '';
+            document.getElementById('bAuthor').value = '';
+            document.getElementById('bPrice').value = '';
+            document.getElementById('bDesc').value = '';
+            document.getElementById('newCategory').value = '';
+            document.getElementById('bCategory').value = '';
+            document.getElementById('bImg').value = '';
+            document.getElementById('bPdf').value = '';
+            document.getElementById('currentPdfInfo').style.display = 'none';
+            document.getElementById('bookFormSubmit').innerHTML = '<i class="fas fa-save"></i> LƯU SÁCH';
+            document.getElementById('cancelBookEditButton').style.display = 'none';
+        }
+
+        // ✅ Xoá sách
+        async function deleteBook(id) {
+            if (!confirm("Xoá sách này?")) return;
+            try {
+                const res = await fetch(`${BASE_URL}/books/${id}`, { method: 'DELETE' });
+                if (res.ok) initDashboard();
+                else alert("Xoá thất bại!");
+            } catch (err) { alert("Lỗi kết nối."); }
+        }
+
+        // ✅ Xoá user
+        async function deleteUser(id) {
+            if (!confirm("Xóa người dùng này?")) return;
+            try {
+                const res = await fetch(`${BASE_URL}/users/${id}`, { method: 'DELETE' });
+                if (res.ok) initDashboard();
+                else alert("Xoá thất bại!");
+            } catch (err) { alert("Lỗi kết nối."); }
+        }
+
+        function logout() {
+            localStorage.removeItem('user');
+            window.location.href = "index.html";
+        }
+
+        // window.onload = initDashboard;
+    </script>
+</body>
+
+</html>

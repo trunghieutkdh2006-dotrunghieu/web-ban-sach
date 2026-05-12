@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Hồ sơ cá nhân</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: #f5f5f5;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .settings-wrapper {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .settings-sidebar {
+            width: 200px;
+            background: white;
+            border-right: 1px solid #e0e0e0;
+            padding: 20px 0;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .sidebar-title {
+            padding: 0 20px;
+            font-size: 14px;
+            color: #999;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 20px;
+            color: #333;
+            text-decoration: none;
+            font-size: 14px;
+            transition: 0.3s;
+        }
+
+        .sidebar-menu a:hover,
+        .sidebar-menu a.active {
+            color: #1D3557;
+            background: #f0f0f0;
+            border-left: 3px solid #1D3557;
+            padding-left: 17px;
+        }
+
+        .sidebar-menu a i {
+            width: 20px;
+        }
+
+        .settings-content {
+            margin-left: 200px;
+            flex: 1;
+            padding: 40px;
+        }
+
+        .profile-card {
+            background: white;
+            border-radius: 12px;
+            padding: 40px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+        }
+
+        .profile-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .profile-header h1 {
+            margin: 0;
+            font-size: 24px;
+            color: #1D3557;
+        }
+
+        .profile-avatar {
+            width: 80px;
+            height: 80px;
+            background: #1D3557;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            font-weight: 600;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-row.full {
+            grid-template-columns: 1fr;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .form-group input,
+        .form-group select {
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #1D3557;
+            box-shadow: 0 0 0 3px rgba(29, 53, 87, 0.1);
+        }
+
+        .form-group input:disabled {
+            background: #f5f5f5;
+            color: #999;
+            cursor: not-allowed;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 30px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            min-width: 100px;
+        }
+
+        .btn-save {
+            background: #F5A623;
+            color: white;
+        }
+
+        .btn-save:hover {
+            background: #E09500;
+        }
+
+        .btn-cancel {
+            background: white;
+            color: #F5A623;
+            border: 1px solid #F5A623;
+        }
+
+        .btn-cancel:hover {
+            background: #FFF9F0;
+        }
+
+        .input-check {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #28a745;
+            font-size: 18px;
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .form-group {
+            position: relative;
+        }
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        .toggle-switch {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .toggle-label {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .toggle-label h4 {
+            margin: 0 0 5px 0;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .toggle-label p {
+            margin: 0;
+            font-size: 12px;
+            color: #999;
+        }
+
+        .checkbox-input {
+            width: 50px;
+            height: 24px;
+            appearance: none;
+            background: #ccc;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: 0.3s;
+            position: relative;
+        }
+
+        .checkbox-input:checked {
+            background: #1D3557;
+        }
+
+        .checkbox-input:before {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            top: 2px;
+            left: 2px;
+            transition: 0.3s;
+        }
+
+        .checkbox-input:checked:before {
+            left: 28px;
+        }
+
+        .faq-item {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #eee;
+            border-radius: 6px;
+        }
+
+        .faq-item h4 {
+            margin: 0 0 8px 0;
+            color: #1D3557;
+            cursor: pointer;
+        }
+
+        .faq-item p {
+            margin: 0;
+            color: #666;
+            font-size: 13px;
+            display: none;
+        }
+
+        .faq-item p.show {
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .settings-wrapper {
+                flex-direction: column;
+            }
+
+            .settings-sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                border-right: none;
+                border-bottom: 1px solid #e0e0e0;
+            }
+
+            .settings-content {
+                margin-left: 0;
+                padding: 20px;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .profile-header {
+                flex-direction: column;
+                gap: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="settings-wrapper">
+        <!-- SIDEBAR -->
+        <div class="settings-sidebar">
+            <div class="sidebar-title">
+                <i class="fas fa-cog"></i> Settings
+            </div>
+            <div class="sidebar-menu">
+                <a href="#" class="active" onclick="goToSection('profile')"><i class="fas fa-user-edit"></i> Edit
+                    profile</a>
+                <a href="#" onclick="goToSection('notification')"><i class="fas fa-bell"></i> Notification</a>
+                <a href="#" onclick="goToSection('security')"><i class="fas fa-lock"></i> Security</a>
+                <a href="#" onclick="goToSection('appearance')"><i class="fas fa-palette"></i> Appearance</a>
+                <a href="index.html"><i class="fas fa-question-circle"></i> Help</a>
+            </div>
+        </div>
+
+        <!-- MAIN CONTENT -->
+        <div class="settings-content">
+            <div class="profile-card">
+                <div class="profile-header">
+                    <h1>Edit profile</h1>
+                    <div class="profile-avatar" id="userInitial">A</div>
+                </div>
+
+                <!-- SECTION: EDIT PROFILE -->
+                <div id="profileSection" class="section active">
+                    <form id="profileForm">
+                        <!-- First Name + Last Name -->
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>First Name</label>
+                                <input type="text" id="firstName" placeholder="Tên" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Last Name</label>
+                                <input type="text" id="lastName" placeholder="Họ" required>
+                            </div>
+                        </div>
+
+                        <!-- Email -->
+                        <div class="form-row full">
+                            <div class="form-group">
+                                <label>Email</label>
+                                <div style="position: relative;">
+                                    <input type="email" id="email" disabled>
+                                    <span class="input-check"><i class="fas fa-check-circle"></i></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Address -->
+                        <div class="form-row full">
+                            <div class="form-group">
+                                <label>Address</label>
+                                <input type="text" id="address" placeholder="Nhập địa chỉ">
+                            </div>
+                        </div>
+
+                        <!-- Contact Number -->
+                        <div class="form-row full">
+                            <div class="form-group">
+                                <label>Contact Number</label>
+                                <input type="tel" id="phone" placeholder="Nhập số điện thoại">
+                            </div>
+                        </div>
+
+                        <!-- City + State -->
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>City</label>
+                                <input type="text" id="city" placeholder="Thành phố">
+                            </div>
+                            <div class="form-group">
+                                <label>State</label>
+                                <input type="text" id="state" placeholder="Tỉnh/Bang">
+                            </div>
+                        </div>
+
+                        <!-- Password -->
+                        <div class="form-row full">
+                            <div class="form-group">
+                                <label>Password</label>
+                                <div style="position: relative;">
+                                    <input type="password" id="password" placeholder="••••••••">
+                                    <span class="input-check"><i class="fas fa-check-circle"></i></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="form-actions">
+                            <button type="button" class="btn btn-cancel"
+                                onclick="window.location.href='index.html'">Cancel</button>
+                            <button type="submit" class="btn btn-save">Save</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- SECTION: NOTIFICATION -->
+                <div id="notificationSection" class="section">
+                    <h2 style="margin-top: 0; color: #1D3557;">Notification Settings</h2>
+                    <div class="toggle-switch">
+                        <div class="toggle-label">
+                            <h4>Email Notifications</h4>
+                            <p>Nhận thông báo về đơn hàng qua email</p>
+                        </div>
+                        <input type="checkbox" class="checkbox-input" id="emailNotif" checked>
+                    </div>
+                    <div class="toggle-switch">
+                        <div class="toggle-label">
+                            <h4>SMS Notifications</h4>
+                            <p>Nhận tin nhắn SMS về đơn hàng và khuyến mãi</p>
+                        </div>
+                        <input type="checkbox" class="checkbox-input" id="smsNotif">
+                    </div>
+                    <div class="toggle-switch">
+                        <div class="toggle-label">
+                            <h4>New Product Alerts</h4>
+                            <p>Thông báo sách và sản phẩm mới</p>
+                        </div>
+                        <input type="checkbox" class="checkbox-input" id="productNotif" checked>
+                    </div>
+                    <div class="toggle-switch">
+                        <div class="toggle-label">
+                            <h4>Promotional Emails</h4>
+                            <p>Nhận ưu đãi và khuyến mãi từ chúng tôi</p>
+                        </div>
+                        <input type="checkbox" class="checkbox-input" id="promoNotif" checked>
+                    </div>
+                    <div class="form-actions" style="margin-top: 20px;">
+                        <button class="btn btn-save" onclick="saveNotificationSettings()">Lưu</button>
+                    </div>
+                </div>
+
+                <!-- SECTION: SECURITY -->
+                <div id="securitySection" class="section">
+                    <h2 style="margin-top: 0; color: #1D3557;">Security Settings</h2>
+                    <form id="securityForm">
+                        <div class="form-group" style="margin-bottom: 20px;">
+                            <label>Current Password</label>
+                            <input type="password" id="currentPassword" placeholder="Nhập mật khẩu hiện tại" required>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 20px;">
+                            <label>New Password</label>
+                            <input type="password" id="newPassword" placeholder="Nhập mật khẩu mới" required>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 20px;">
+                            <label>Confirm Password</label>
+                            <input type="password" id="confirmPassword" placeholder="Xác nhận mật khẩu" required>
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" class="btn btn-cancel" onclick="switchSection('profile')">Hủy</button>
+                            <button type="submit" class="btn btn-save">Đổi mật khẩu</button>
+                        </div>
+                    </form>
+
+                    <hr style="margin: 30px 0; border: none; border-top: 1px solid #eee;">
+
+                    <h3 style="color: #1D3557;">Đăng xuất từ các thiết bị khác</h3>
+                    <p style="color: #666; font-size: 13px;">Buộc tất cả các phiên đăng nhập khác trên các thiết bị khác
+                        phải đăng nhập lại</p>
+                    <button class="btn btn-save" onclick="logoutOtherDevices()" style="background: #E63946;">Logout
+                        Other Devices</button>
+                </div>
+
+                <!-- SECTION: APPEARANCE -->
+                <div id="appearanceSection" class="section">
+                    <h2 style="margin-top: 0; color: #1D3557;">Appearance Settings</h2>
+                    <div class="toggle-switch">
+                        <div class="toggle-label">
+                            <h4>Dark Mode</h4>
+                            <p>Chế độ tối để bảo vệ mắt</p>
+                        </div>
+                        <input type="checkbox" class="checkbox-input" id="darkMode">
+                    </div>
+                    <div class="toggle-switch">
+                        <div class="toggle-label">
+                            <h4>Font Size</h4>
+                            <p>Cỡ chữ hiển thị</p>
+                        </div>
+                        <select id="fontSize" style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 4px;">
+                            <option value="12">Nhỏ (12px)</option>
+                            <option value="14" selected>Vừa (14px)</option>
+                            <option value="16">Lớn (16px)</option>
+                            <option value="18">Rất lớn (18px)</option>
+                        </select>
+                    </div>
+                    <div class="form-actions" style="margin-top: 20px;">
+                        <button class="btn btn-save" onclick="saveAppearanceSettings()">Lưu</button>
+                    </div>
+                </div>
+
+                <!-- SECTION: HELP -->
+                <div id="helpSection" class="section">
+                    <h2 style="margin-top: 0; color: #1D3557;">Help & Support</h2>
+
+                    <h3 style="color: #1D3557; margin-top: 20px;">Câu hỏi thường gặp</h3>
+
+                    <div class="faq-item">
+                        <h4 onclick="toggleFAQ(this)">❓ Làm cách nào để đặt lại mật khẩu?</h4>
+                        <p>Bạn có thể đặt lại mật khẩu bằng cách vào mục Bảo mật trong Cài đặt, nhập mật khẩu hiện tại
+                            và mật khẩu mới.</p>
+                    </div>
+
+                    <div class="faq-item">
+                        <h4 onclick="toggleFAQ(this)">❓ Tôi không nhận được mã xác nhận?</h4>
+                        <p>Vui lòng kiểm tra thư mục thư rác hoặc spam. Nếu vẫn không thấy, bạn có thể yêu cầu gửi lại
+                            mã xác nhận.</p>
+                    </div>
+
+                    <div class="faq-item">
+                        <h4 onclick="toggleFAQ(this)">❓ Làm cách nào để cập nhật thông tin cá nhân?</h4>
+                        <p>Chuyển đến tab "Edit profile" để cập nhật tên, địa chỉ, số điện thoại, thành phố và các thông
+                            tin khác.</p>
+                    </div>
+
+                    <div class="faq-item">
+                        <h4 onclick="toggleFAQ(this)">❓ Làm cách nào để liên hệ hỗ trợ khách hàng?</h4>
+                        <p>Bạn có thể liên hệ chúng tôi qua email support@bookstore.com hoặc gọi số hotline 1800-123-456
+                            từ 8:00 - 22:00 hàng ngày.</p>
+                    </div>
+
+                    <h3 style="color: #1D3557; margin-top: 30px;">Liên hệ hỗ trợ</h3>
+                    <p style="color: #666; font-size: 13px;">
+                        Email: <a href="mailto:support@bookstore.com"
+                            style="color: #1D3557; text-decoration: none;">support@bookstore.com</a><br>
+                        Hotline: <a href="tel:18001234567"
+                            style="color: #1D3557; text-decoration: none;">1800-123-456</a><br>
+                        Chat: Mở chat với nhân viên hỗ trợ
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function switchSection(section) {
+            // Ẩn tất cả section
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            // Bỏ active từ menu
+            document.querySelectorAll('.sidebar-menu a').forEach(link => link.classList.remove('active'));
+
+            // Hiển thị section được chọn
+            const mapping = {
+                'profile': 'profileSection',
+                'notification': 'notificationSection',
+                'security': 'securitySection',
+                'appearance': 'appearanceSection',
+                'help': 'helpSection'
+            };
+
+            const sectionId = mapping[section];
+            if (sectionId) {
+                document.getElementById(sectionId).classList.add('active');
+            }
+
+            // Highlight menu
+            document.querySelectorAll('.sidebar-menu a').forEach(link => {
+                if ((section === 'profile' && link.textContent.includes('Edit profile')) ||
+                    (section === 'notification' && link.textContent.includes('Notification')) ||
+                    (section === 'security' && link.textContent.includes('Security')) ||
+                    (section === 'appearance' && link.textContent.includes('Appearance')) ||
+                    (section === 'help' && link.textContent.includes('Help'))) {
+                    link.classList.add('active');
+                }
+            });
+        }
+
+        function toggleFAQ(element) {
+            const p = element.nextElementSibling;
+            if (p) {
+                p.classList.toggle('show');
+            }
+        }
+
+        function saveNotificationSettings() {
+            const settings = {
+                emailNotif: document.getElementById('emailNotif').checked,
+                smsNotif: document.getElementById('smsNotif').checked,
+                productNotif: document.getElementById('productNotif').checked,
+                promoNotif: document.getElementById('promoNotif').checked
+            };
+            localStorage.setItem('notificationSettings', JSON.stringify(settings));
+            alert('Lưu cài đặt thông báo thành công!');
+        }
+
+        function saveAppearanceSettings() {
+            const settings = {
+                darkMode: document.getElementById('darkMode').checked,
+                fontSize: document.getElementById('fontSize').value
+            };
+            localStorage.setItem('appearanceSettings', JSON.stringify(settings));
+
+            if (settings.darkMode) {
+                document.body.classList.add('dark-mode');
+            } else {
+                document.body.classList.remove('dark-mode');
+            }
+
+            document.body.style.fontSize = settings.fontSize + 'px';
+            alert('Lưu cài đặt giao diện thành công!');
+        }
+
+        function logoutOtherDevices() {
+            if (!confirm('Bạn có chắc muốn đăng xuất khỏi các thiết bị khác không?')) return;
+            alert('Đã đăng xuất khỏi các thiết bị khác!');
+        }
+
+        window.onload = () => {
+            const user = JSON.parse(localStorage.getItem('user'));
+            if (!user) {
+                window.location.href = 'index.html';
+                return;
+            }
+
+            // Tách First Name và Last Name từ name hoặc username
+            const fullName = user.name || user.username || '';
+            const nameParts = fullName.split(' ');
+            const firstName = nameParts[0] || '';
+            const lastName = nameParts.slice(1).join(' ') || '';
+
+            // Load dữ liệu vào form
+            document.getElementById('firstName').value = firstName;
+            document.getElementById('lastName').value = lastName;
+            document.getElementById('email').value = user.email || '';
+            document.getElementById('address').value = user.address || '';
+            document.getElementById('phone').value = user.phone || '';
+            document.getElementById('city').value = user.city || '';
+            document.getElementById('state').value = user.state || '';
+
+            // Avatar
+            const initial = firstName.charAt(0).toUpperCase();
+            document.getElementById('userInitial').textContent = initial;
+
+            // Load notification settings
+            const notifSettings = JSON.parse(localStorage.getItem('notificationSettings')) || {};
+            if (notifSettings.emailNotif !== undefined) document.getElementById('emailNotif').checked = notifSettings.emailNotif;
+            if (notifSettings.smsNotif !== undefined) document.getElementById('smsNotif').checked = notifSettings.smsNotif;
+            if (notifSettings.productNotif !== undefined) document.getElementById('productNotif').checked = notifSettings.productNotif;
+            if (notifSettings.promoNotif !== undefined) document.getElementById('promoNotif').checked = notifSettings.promoNotif;
+
+            // Load appearance settings
+            const appearanceSettings = JSON.parse(localStorage.getItem('appearanceSettings')) || {};
+            if (appearanceSettings.darkMode !== undefined) document.getElementById('darkMode').checked = appearanceSettings.darkMode;
+            if (appearanceSettings.fontSize) document.getElementById('fontSize').value = appearanceSettings.fontSize;
+
+            // Cập nhật menu active
+            document.querySelectorAll('.sidebar-menu a').forEach((link, index) => {
+                link.classList.remove('active');
+                link.onclick = (e) => {
+                    e.preventDefault();
+                    const section = ['profile', 'notification', 'security', 'appearance', 'help'][index];
+                    switchSection(section);
+                };
+            });
+            document.querySelector('.sidebar-menu a').classList.add('active');
+        };
+
+        document.getElementById('profileForm').onsubmit = async (e) => {
+            e.preventDefault();
+
+            const user = JSON.parse(localStorage.getItem('user'));
+            const firstName = document.getElementById('firstName').value.trim();
+            const lastName = document.getElementById('lastName').value.trim();
+            const address = document.getElementById('address').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+            const city = document.getElementById('city').value.trim();
+            const state = document.getElementById('state').value.trim();
+            const password = document.getElementById('password').value.trim();
+
+            if (!firstName || !lastName) {
+                alert('Vui lòng nhập tên và họ');
+                return;
+            }
+
+            const fullName = `${lastName} ${firstName}`;
+
+            // Cập nhật localStorage ngay
+            user.name = fullName;
+            user.address = address;
+            user.phone = phone;
+            user.city = city;
+            user.state = state;
+
+            // Gửi lên backend
+            try {
+                const res = await fetch(`http://localhost:5001/api/users/${user.id || user._id}/profile`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${user.token || ''}`
+                    },
+                    body: JSON.stringify({
+                        name: fullName,
+                        address,
+                        phone,
+                        city,
+                        state
+                    })
+                });
+
+                if (!res.ok) {
+                    console.warn('Lỗi cập nhật profile trên server');
+                }
+
+                // Nếu có mật khẩu, cập nhật mật khẩu
+                if (password) {
+                    const pwRes = await fetch('http://localhost:5001/api/auth/change-password', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${user.token || ''}`
+                        },
+                        body: JSON.stringify({
+                            newPassword: password
+                        })
+                    });
+                    if (!pwRes.ok) {
+                        console.warn('Không thể đổi mật khẩu trên server');
+                    }
+                }
+            } catch (err) {
+                console.warn('Lỗi kết nối server:', err);
+            }
+
+            localStorage.setItem('user', JSON.stringify(user));
+            alert('Cập nhật thông tin thành công!');
+            window.location.reload();
+        };
+
+        document.getElementById('securityForm')?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const user = JSON.parse(localStorage.getItem('user'));
+            const currentPw = document.getElementById('currentPassword').value;
+            const newPw = document.getElementById('newPassword').value;
+            const confirmPw = document.getElementById('confirmPassword').value;
+
+            if (!currentPw || !newPw || !confirmPw) {
+                alert('Vui lòng nhập đầy đủ thông tin');
+                return;
+            }
+
+            if (newPw !== confirmPw) {
+                alert('Mật khẩu xác nhận không khớp');
+                return;
+            }
+
+            if (newPw.length < 6) {
+                alert('Mật khẩu phải có ít nhất 6 ký tự');
+                return;
+            }
+
+            try {
+                const res = await fetch('http://localhost:5001/api/auth/change-password', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        email: user.email,
+                        oldPassword: currentPw,
+                        newPassword: newPw
+                    })
+                });
+
+                if (res.ok) {
+                    alert('Đổi mật khẩu thành công!');
+                    document.getElementById('securityForm').reset();
+                } else {
+                    const data = await res.json();
+                    alert('Lỗi: ' + (data.message || 'Không thể đổi mật khẩu'));
+                }
+            } catch (err) {
+                alert('Lỗi kết nối server');
+            }
+        });
+    </script>
+</body>
+
+</html>

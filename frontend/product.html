@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Chi tiết sách</title>
+
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .pdf-preview-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            padding: 20px;
+        }
+
+        .pdf-preview-modal {
+            position: relative;
+            width: min(100%, 960px);
+            height: min(100%, 85vh);
+            background: #fff;
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: 0 20px 70px rgba(0, 0, 0, 0.2);
+        }
+
+        .pdf-preview-modal iframe {
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
+
+        .pdf-close-btn {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            border: none;
+            background: #1d3557;
+            color: #fff;
+            padding: 10px 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            z-index: 2;
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <div class="product-container">
+
+        <div class="product-image-box">
+
+            <img id="book-image" src="" class="product-image">
+
+        </div>
+
+        <div class="product-info">
+
+            <h1 id="book-title"></h1>
+
+            <p id="book-author"></p>
+
+            <h2 id="book-price"></h2>
+
+            <p id="book-description"></p>
+
+            <button id="read-sample-btn" onclick="openPdfPreview()" class="btn-cta"
+                style="display:none; margin-right:12px;">
+                Đọc thử
+            </button>
+
+            <button onclick="addCurrentBookToCart()" class="add-cart-btn">
+                Thêm vào giỏ hàng
+            </button>
+
+        </div>
+
+    </div>
+
+    <script src="js/cart.js"></script>
+
+    <script src="js/product.js"></script>
+
+</body>
+
+</html>

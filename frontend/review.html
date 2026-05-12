@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Tất cả Review Sách</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .reviews-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            padding: 40px;
+            max-width: 1200px;
+            margin: auto;
+        }
+
+        .review-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            border-left: 5px solid #1D3557;
+        }
+
+        .rev-book-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+
+        .rev-book-info img {
+            width: 50px;
+            height: 70px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+
+        .rev-user {
+            font-weight: bold;
+            color: #1D3557;
+            display: block;
+        }
+
+        .rev-stars {
+            color: #f1c40f;
+            font-size: 14px;
+        }
+
+        .rev-content {
+            font-style: italic;
+            color: #555;
+            margin: 10px 0;
+            line-height: 1.5;
+        }
+
+        .rev-date {
+            font-size: 12px;
+            color: #aaa;
+        }
+    </style>
+</head>
+
+<body>
+    <h2 style="text-align:center; margin-top:40px; color:#1D3557;">Cộng đồng Review Sách</h2>
+
+    <div id="all-reviews-container" class="reviews-grid">
+        <p>Đang tải các bài đánh giá...</p>
+    </div>
+
+    <script>
+        const BASE_URL = "http://localhost:5001/api";
+
+        async function loadAllReviews() {
+            try {
+                const res = await fetch(`${BASE_URL}/reviews`);
+                const data = await res.json();
+
+                const container = document.getElementById('all-reviews-container');
+                container.innerHTML = data.map(r => `
+                    <div class="review-card">
+                        <div class="rev-book-info">
+                            <img src="https://via.placeholder.com/50" alt="">
+                            <div>
+                                <small>Đánh giá cho sách</small>
+                                <div style="font-weight:bold; font-size:14px;">ID sách: ${r.bookId}</div>
+                            </div>
+                        </div>
+                        <span class="rev-user"><i class="fas fa-user-circle"></i> ${r.userName}</span>
+                        <div class="rev-stars">${"⭐".repeat(r.rating)}</div>
+                        <p class="rev-content">"${r.comment}"</p>
+                        <span class="rev-date">${new Date(r.createdAt).toLocaleDateString('vi-VN')}</span>
+                    </div>
+                `).join('') || '<p>Chưa có đánh giá nào trên hệ thống.</p>';
+            } catch (err) {
+                console.log("Lỗi tải review");
+            }
+        }
+
+        window.onload = loadAllReviews;
+    </script>
+</body>
+
+</html>

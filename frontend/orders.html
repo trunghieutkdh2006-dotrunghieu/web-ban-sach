@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lịch sử mua hàng</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            background: #f4f7fb;
+        }
+
+        .orders-container {
+            max-width: 1050px;
+            margin: 40px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 18px;
+            box-shadow: 0 18px 45px rgba(15, 23, 42, 0.08);
+        }
+
+        .orders-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin-bottom: 24px;
+        }
+
+        .orders-header h2 {
+            margin: 0;
+            font-size: 28px;
+            color: #0f172a;
+        }
+
+        .orders-header p {
+            margin: 8px 0 0;
+            color: #475569;
+        }
+
+        .button-primary {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 20px;
+            background: #1d4ed8;
+            color: white;
+            border-radius: 12px;
+            text-decoration: none;
+            transition: background 0.2s;
+        }
+
+        .button-primary:hover {
+            background: #2563eb;
+        }
+
+        .orders-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 18px;
+        }
+
+        .orders-table th,
+        .orders-table td {
+            padding: 14px 16px;
+            border-bottom: 1px solid #e2e8f0;
+            vertical-align: middle;
+        }
+
+        .orders-table th {
+            background: #f8fafc;
+            color: #1e293b;
+            font-weight: 700;
+            font-size: 13px;
+        }
+
+        .status-badge {
+            padding: 6px 14px;
+            border-radius: 9999px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .status-done {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-cancelled {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .action-btn {
+            display: inline-block;
+            padding: 6px 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            margin: 2px;
+            transition: 0.2s;
+        }
+
+        .action-btn {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .action-btn:hover {
+            background: #fca5a5;
+        }
+
+        .action-btn.secondary {
+            background: #e0f2fe;
+            color: #0369a1;
+        }
+
+        .action-btn.secondary:hover {
+            background: #bae6fd;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 0;
+            color: #475569;
+        }
+
+        /* MODAL */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+
+        .modal-box {
+            background: white;
+            padding: 32px;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 440px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-box h3 {
+            margin: 0 0 16px;
+            color: #1e293b;
+        }
+
+        .modal-box textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            font-size: 14px;
+            resize: vertical;
+            min-height: 100px;
+            outline: none;
+            box-sizing: border-box;
+        }
+
+        .modal-box textarea:focus {
+            border-color: #1d4ed8;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 16px;
+            justify-content: flex-end;
+        }
+
+        .modal-actions button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .btn-confirm {
+            background: #1d4ed8;
+            color: white;
+        }
+
+        .btn-confirm:hover {
+            background: #2563eb;
+        }
+
+        .btn-cancel-modal {
+            background: #f1f5f9;
+            color: #475569;
+        }
+
+        .btn-cancel-modal:hover {
+            background: #e2e8f0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="orders-container">
+        <div class="orders-header">
+            <div>
+                <h2><i class="fas fa-history"></i> Lịch sử mua hàng</h2>
+                <p>Kiểm tra đơn hàng cũ, ngày mua và trạng thái ngay tại đây.</p>
+            </div>
+            <a href="index.html" class="button-primary">
+                <i class="fas fa-home"></i> Về trang chủ
+            </a>
+        </div>
+
+        <table class="orders-table" id="orderTable">
+            <thead>
+                <tr>
+                    <th>Mã đơn</th>
+                    <th>Ngày mua</th>
+                    <th>Sản phẩm</th>
+                    <th>Tổng tiền</th>
+                    <th>Trạng thái</th>
+                    <th>Địa chỉ</th>
+                    <th>Hành động</th>
+                </tr>
+            </thead>
+            <tbody id="orderList"></tbody>
+        </table>
+    </div>
+
+    <script>
+        const BASE_URL = "http://localhost:5001/api";
+        let allOrders = [];
+
+        // =========================
+        // LOAD ORDERS
+        // =========================
+        async function loadOrders() {
+            const user = JSON.parse(localStorage.getItem('user'));
+            const localHistory = JSON.parse(localStorage.getItem('ordersHistory')) || [];
+            const userId = user ? (user.id || user._id) : 'guest';
+
+            let orders = [];
+
+            if (user) {
+                try {
+                    const res = await fetch(`${BASE_URL}/orders/user/${userId}`, {
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': user.token ? `Bearer ${user.token}` : ''
+                        }
+                    });
+                    const data = await res.json();
+                    if (Array.isArray(data) && data.length > 0) orders = data;
+                    else if (data && Array.isArray(data.orders)) orders = data.orders;
+                } catch (err) {
+                    console.warn('Dùng dữ liệu cục bộ.', err);
+                }
+
+                if (!orders.length) {
+                    orders = localHistory.filter(o => o.userId === userId || o.userId === 'guest');
+                }
+            } else {
+                orders = localHistory.filter(o => o.userId === 'guest');
+            }
+
+            allOrders = orders;
+
+            if (!orders.length) {
+                document.getElementById('orderList').innerHTML = `
+                    <tr><td colspan="7">
+                        <div class="empty-state">
+                            <strong>Bạn chưa có đơn hàng nào.</strong><br>
+                            Hãy thêm sản phẩm vào giỏ và thanh toán ngay.
+                        </div>
+                    </td></tr>
+                `;
+                return;
+            }
+
+            renderOrders(orders);
+        }
+
+        // =========================
+        // RENDER ORDERS
+        // =========================
+        function renderOrders(orders) {
+            const html = orders.map(order => {
+                const productTitles = Array.isArray(order.items)
+                    ? order.items.map(i => i.title || i.name || 'Sản phẩm').join(', ')
+                    : 'Không có thông tin';
+
+                const date = order.createdAt
+                    ? new Date(order.createdAt).toLocaleString('vi-VN')
+                    : order.date || '';
+
+                const orderId = order._id || order.id || '---';
+                const total = Number(order.totalPrice || order.total || 0).toLocaleString('vi-VN');
+                const statusText = order.status || 'Đang xử lý';
+
+                const badgeClass = statusText === 'Đã hủy' ? 'status-cancelled'
+                    : (statusText === 'Hoàn thành' || statusText === 'Đã thanh toán') ? 'status-done'
+                        : 'status-pending';
+
+                const addressText = order.shippingAddress || 'Chưa có địa chỉ';
+                const canModify = statusText !== 'Đã hủy' && statusText !== 'Đã thanh toán' && statusText !== 'Hoàn thành';
+
+                const actions = canModify ? `
+                    <button class="action-btn" onclick="cancelOrder('${orderId}')">
+                        <i class="fas fa-times"></i> Huỷ
+                    </button>
+                    <button class="action-btn secondary" onclick="editShippingAddress('${orderId}', '${addressText.replace(/'/g, "\\'")}')">
+                        <i class="fas fa-map-marker-alt"></i> Sửa địa chỉ
+                    </button>
+                ` : `<span style="color:#94a3b8;font-size:13px;">Không thể chỉnh sửa</span>`;
+
+                return `
+                    <tr id="row-${orderId}">
+                        <td><strong>#ORDER-${orderId}</strong></td>
+                        <td>${date}</td>
+                        <td style="max-width:160px;word-break:break-word">${productTitles}</td>
+                        <td><strong>${total}đ</strong></td>
+                        <td><span class="status-badge ${badgeClass}">${statusText}</span></td>
+                        <td style="max-width:140px;word-break:break-word">${addressText}</td>
+                        <td>${actions}</td>
+                    </tr>
+                `;
+            }).join('');
+
+            document.getElementById('orderList').innerHTML = html;
+        }
+
+        // =========================
+        // HUỶ ĐƠN HÀNG
+        // =========================
+        async function cancelOrder(orderId) {
+            if (!confirm('Bạn có chắc muốn huỷ đơn hàng này không?')) return;
+
+            // Cập nhật local
+            const history = JSON.parse(localStorage.getItem('ordersHistory')) || [];
+            const idx = history.findIndex(o => (o._id || o.id) === orderId);
+            if (idx !== -1) {
+                history[idx].status = 'Đã hủy';
+                localStorage.setItem('ordersHistory', JSON.stringify(history));
+            }
+
+            // Cập nhật server nếu có
+            try {
+                await fetch(`${BASE_URL}/orders/${orderId}/cancel`, { method: 'PATCH' });
+            } catch (e) {
+                console.warn('Không cập nhật được server, đã lưu local.');
+            }
+
+            // Cập nhật UI ngay không cần reload
+            allOrders = allOrders.map(o =>
+                (o._id || o.id) === orderId ? { ...o, status: 'Đã hủy' } : o
+            );
+            renderOrders(allOrders);
+            alert('Đã huỷ đơn hàng.');
+        }
+
+        // =========================
+        // SỬA ĐỊA CHỈ
+        // =========================
+        function editShippingAddress(orderId, currentAddress) {
+            // Xóa modal cũ nếu có
+            document.querySelector('.modal-overlay')?.remove();
+
+            const modal = document.createElement('div');
+            modal.className = 'modal-overlay';
+            modal.innerHTML = `
+                <div class="modal-box">
+                    <h3><i class="fas fa-map-marker-alt"></i> Sửa địa chỉ nhận hàng</h3>
+                    <textarea id="newAddress" placeholder="Nhập địa chỉ mới...">${currentAddress === 'Chưa có địa chỉ' ? '' : currentAddress}</textarea>
+                    <div class="modal-actions">
+                        <button class="btn-cancel-modal" onclick="document.querySelector('.modal-overlay').remove()">
+                            Hủy
+                        </button>
+                        <button class="btn-confirm" onclick="saveAddress('${orderId}')">
+                            <i class="fas fa-save"></i> Lưu địa chỉ
+                        </button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+
+            // Click ngoài modal để đóng
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) modal.remove();
+            });
+        }
+
+        async function saveAddress(orderId) {
+            const newAddress = document.getElementById('newAddress').value.trim();
+            if (!newAddress) {
+                alert('Vui lòng nhập địa chỉ!');
+                return;
+            }
+
+            // Cập nhật local
+            const history = JSON.parse(localStorage.getItem('ordersHistory')) || [];
+            const idx = history.findIndex(o => (o._id || o.id) === orderId);
+            if (idx !== -1) {
+                history[idx].shippingAddress = newAddress;
+                localStorage.setItem('ordersHistory', JSON.stringify(history));
+            }
+
+            // Cập nhật server nếu có
+            try {
+                await fetch(`${BASE_URL}/orders/${orderId}`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ shippingAddress: newAddress })
+                });
+            } catch (e) {
+                console.warn('Không cập nhật được server, đã lưu local.');
+            }
+
+            // Cập nhật UI
+            allOrders = allOrders.map(o =>
+                (o._id || o.id) === orderId ? { ...o, shippingAddress: newAddress } : o
+            );
+            renderOrders(allOrders);
+
+            document.querySelector('.modal-overlay')?.remove();
+            alert('Đã cập nhật địa chỉ ✅');
+        }
+
+        window.onload = loadOrders;
+    </script>
+
+    <!-- FOOTER
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section about">
+                    <h4>Về TAIEBOOKS</h4>
+                    <p>TAIEBOOKS là nền tảng đọc sách trực tuyến hàng đầu, cung cấp hàng ngàn đầu sách hay từ các tác
+                        giả nổi tiếng.</p>
+                    <div class="footer-socials">
+                        <a href="#" title="Facebook"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" title="TikTok"><i class="fab fa-tiktok"></i></a>
+                        <a href="#" title="YouTube"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+
+                <div class="footer-section">
+                    <h4>Danh mục</h4>
+                    <ul>
+                        <li><a href="#">Văn học</a></li>
+                        <li><a href="#">Kinh tế - kỹ năng</a></li>
+                        <li><a href="#">Ngoại văn</a></li>
+                        <li><a href="#">Cũ hiếm</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-section">
+                    <h4>Hỗ trợ</h4>
+                    <ul>
+                        <li><a href="#">Liên hệ chúng tôi</a></li>
+                        <li><a href="#">Câu hỏi thường gặp</a></li>
+                        <li><a href="#">Chính sách hoàn trả</a></li>
+                        <li><a href="#">Điều khoản dịch vụ</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-section">
+                    <h4>Công ty</h4>
+                    <ul>
+                        <li><a href="#">Về chúng tôi</a></li>
+                        <li><a href="#">Blog</a></li>
+                        <li><a href="#">Tuyển dụng</a></li>
+                        <li><a href="#">Liên kết</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <div class="footer-copyright">
+                    &copy; 2024 TAIEBOOKS. All rights reserved.
+                </div>
+                <div>
+                    <a href="#">Chính sách bảo mật</a> |
+                    <a href="#">Điều khoản sử dụng</a> |
+                    <a href="#">Cài đặt cookie</a>
+                </div>
+            </div>
+        </div>
+    </footer> -->
+</body>
+
+</html>

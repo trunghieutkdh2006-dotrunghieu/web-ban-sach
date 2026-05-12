@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giỏ hàng chuyên nghiệp</title>
+    <link rel="stylesheet" href="css/style.css">
+    <!-- Thêm thư viện để hiện thông báo đẹp hơn -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+
+<body>
+
+    <div class="container">
+        <h1>Giỏ hàng của bạn</h1>
+        <div class="cart-wrapper">
+            <!-- Bên trái: Danh sách sản phẩm -->
+            <div class="cart-main">
+                <div id="cart-items">
+                    <!-- JS sẽ đổ dữ liệu vào đây -->
+                </div>
+            </div>
+
+            <!-- Bên phải: Tóm tắt đơn hàng -->
+            <div class="cart-sidebar">
+                <div class="summary-box">
+                    <h3>Tóm tắt đơn hàng</h3>
+                    <div class="summary-item">
+                        <span>Tạm tính:</span>
+                        <span id="subtotal">0đ</span>
+                    </div>
+                    <div class="summary-item">
+                        <span>Giảm giá:</span>
+                        <span id="discount-amount">0đ</span>
+                    </div>
+                    <div class="summary-item">
+                        <span>Phí vận chuyển:</span>
+                        <span>Miễn phí</span>
+                    </div>
+                    <div class="coupon-box">
+                        <input type="text" id="coupon-input" placeholder="Nhập mã giảm giá">
+                        <button onclick="applyCoupon()">Áp dụng</button>
+                    </div>
+                    <div class="address-box">
+                        <h4>Địa chỉ giao hàng</h4>
+                        <textarea id="shipping-address" placeholder="Nhập địa chỉ nhận hàng" rows="3"
+                            style="width:100%;border:1px solid #ccc;border-radius:8px;padding:10px;font-size:14px;"></textarea>
+                    </div>
+                    <div class="payment-box">
+                        <h4>Phương thức thanh toán</h4>
+                        <div class="payment-methods">
+                            <label><input type="radio" name="paymentMethod" value="cod" checked> COD - Thanh toán khi
+                                nhận hàng</label>
+                            <label><input type="radio" name="paymentMethod" value="card"> Thẻ nội địa / Visa</label>
+                            <label><input type="radio" name="paymentMethod" value="mb"> MB BANK</label>
+                            <label><input type="radio" name="paymentMethod" value="vietinbank"> VIETINBANK</label>
+                            <label><input type="radio" name="paymentMethod" value="techcombank"> TECHCOMBANK</label>
+                        </div>
+                        <div id="payment-details" class="payment-details">
+                            <p>Chọn phương thức để hiển thị thông tin thanh toán.</p>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="summary-total">
+                        <span>Tổng cộng:</span>
+                        <span id="cart-total">0đ</span>
+                    </div>
+                    <button class="checkout-btn" onclick="processCheckout()">
+                        THANH TOÁN NGAY
+                    </button>
+                    <button class="checkout-btn" style="background: #E63946; margin-top: 12px;" onclick="clearCart()">
+                        XÓA TẤT CẢ
+                    </button>
+                    <a href="index.html" class="back-link">← Tiếp tục mua sắm</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="qrModal" class="qr-modal" onclick="closeQR()">
+        <img id="qrModalImg" class="qr-modal-img">
+    </div>
+
+    <script src="js/cart.js"></script>
+</body>
+
+</html>
