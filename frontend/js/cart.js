@@ -2,8 +2,8 @@
 // CONSTANTS
 // =========================
 const CART_KEY = "cart";
-const API_BASE_URL = "http://localhost:5001/api";
-const IMAGE_BASE_URL = "http://localhost:5001";
+const API_BASE_URL = "window.location.origin/api";
+const IMAGE_BASE_URL = "window.location.origin";
 const VALID_COUPONS = {
     "TAIEBOOK10": 0.1,
     "SALE20": 0.2,

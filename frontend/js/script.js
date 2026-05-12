@@ -1,6 +1,6 @@
-const API = "http://localhost:5001/api/books";
-const CATEGORY_API = "http://localhost:5001/api/categories";
-const IMAGE_BASE_URL = "http://localhost:5001";
+const API = "window.location.origin/api/books";
+const CATEGORY_API = "window.location.origin/api/categories";
+const IMAGE_BASE_URL = "window.location.origin";
 
 // =========================
 // GLOBAL STATE
@@ -541,7 +541,7 @@ function initUserSystem() {
             const email = document.getElementById("loginEmail").value.trim();
             const pass = document.getElementById("loginPass").value;
             try {
-                const res = await fetch("http://localhost:5001/api/auth/login", {
+                const res = await fetch("window.location.origin/api/auth/login", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ email, password: pass })
@@ -567,7 +567,7 @@ function initUserSystem() {
             const email = document.getElementById("regEmail").value.trim();
             const pass = document.getElementById("regPass").value;
             try {
-                const res = await fetch("http://localhost:5001/api/auth/register", {
+                const res = await fetch("window.location.origin/api/auth/register", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ username, email, password: pass })

@@ -1,6 +1,6 @@
 // const API = "https://passenger-grapple-dynamic.ngrok-free.dev/api/books"
-const API = "http://localhost:5001/api/books";
-const IMAGE_BASE_URL = "http://localhost:5001";
+const API = "window.location.origin/api/books";
+const IMAGE_BASE_URL = "window.location.origin";
 
 // =========================
 // 1. TẢI DANH SÁCH SÁCH

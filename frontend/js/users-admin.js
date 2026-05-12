@@ -1,4 +1,4 @@
-const API = "http://localhost:5001/api/users";
+const API = "window.location.origin/api/users";
 let allUsers = [];
 const DEFAULT_PASSWORD = "12345678";
 

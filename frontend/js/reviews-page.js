@@ -1,4 +1,4 @@
-const BASE_URL = "http://localhost:5001/api";
+const BASE_URL = "window.location.origin/api";
 
 async function loadAllReviews() {
     const container = document.getElementById('all-reviews-container');

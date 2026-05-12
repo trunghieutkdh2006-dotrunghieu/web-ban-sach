@@ -481,7 +481,7 @@
 
     <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
     <script>
-        const API = "http://localhost:5001/api/users";
+        const API = "window.location.origin/api/users";
         let allUsers = [];
 
         // =========================
@@ -683,7 +683,7 @@
                     let success = 0, fail = 0;
                     for (const row of rows) {
                         try {
-                            const res = await fetch("http://localhost:5001/api/auth/register", {
+                            const res = await fetch("window.location.origin/api/auth/register", {
                                 method: "POST",
                                 headers: { "Content-Type": "application/json" },
                                 body: JSON.stringify({

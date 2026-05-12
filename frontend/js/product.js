@@ -1,4 +1,4 @@
-const IMAGE_BASE_URL = "http://localhost:5001";
+const IMAGE_BASE_URL = "window.location.origin";
 
 let currentBook = null;
 
@@ -46,7 +46,7 @@ async function loadBook() {
 
         const response =
         await fetch(
-            `http://localhost:5001/api/books/${bookId}`
+            `window.location.origin/api/books/${bookId}`
         );
 
         const book =
