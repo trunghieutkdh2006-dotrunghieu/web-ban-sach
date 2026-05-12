@@ -1,3 +1,4 @@
+const API_BASE_URL = window.location.origin + "/api/auth";
 // =================================
 // 1. CHỨC NĂNG ẨN/HIỆN MẬT KHẨU
 // =================================
@@ -33,11 +34,11 @@ if (loginForm) {
 
         try {
             // Gửi yêu cầu đến API (Port 5001)
-            const response = await fetch("http://localhost:5001/api/auth/login", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email, password }),
-            });
+            const response = await fetch(`${API_BASE_URL}/login`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, password }),
+});
 
             const data = await response.json();
 
@@ -76,11 +77,11 @@ if (registerForm) {
         const password = document.getElementById("regPass").value;
 
         try {
-            const response = await fetch("http://localhost:5001/api/auth/register", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ name, email, password }),
-            });
+            const response = await fetch(`${API_BASE_URL}/register`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ name, email, password }),
+});
 
             const data = await response.json();
 
