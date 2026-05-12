@@ -135,7 +135,18 @@ app.use("/api/users", require("./routes/user"));
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // 👇 FIX 2: frontend
-app.use(express.static(path.join(__dirname, "../frontend")));
+const frontendPath = path.join(__dirname, "..", "frontend");
+app.use(express.static(frontendPath));
+
+app.get("*", (req, res) => {
+    const indexPath = path.join(frontendPath, "index.html");
+    res.sendFile(indexPath, (err) => {
+        if (err) {
+            console.error("Không tìm thấy file index.html tại:", indexPath);
+            res.status(404).send("Giao diện đang được cập nhật, vui lòng thử lại sau!");
+        }
+    });
+});
 
 // =========================
 // MONGODB
