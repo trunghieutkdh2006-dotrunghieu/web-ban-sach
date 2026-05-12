@@ -135,14 +135,22 @@ app.use("/api/users", require("./routes/user"));
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // 👇 FIX 2: frontend
-const frontendPath = path.join(__dirname, "..", "frontend");
+const Book = require('./models/Book');
+const path = require('path');
+
+// Khi Root Directory là 'backend', __dirname chính là thư mục backend
+// Chúng ta dùng path.resolve để nhảy ra ngoài thư mục gốc rồi vào frontend
+const frontendPath = path.resolve(__dirname, '..', 'frontend');
+
 app.use(express.static(frontendPath));
 
 app.get("*", (req, res) => {
     const indexPath = path.join(frontendPath, "index.html");
     res.sendFile(indexPath, (err) => {
         if (err) {
-            console.error("Không tìm thấy file index.html tại:", indexPath);
+            console.error("Lỗi thực tế tại đường dẫn:", indexPath);
+            // In ra thư mục hiện tại để debug trên Render Logs
+            console.error("Server đang đứng ở thư mục:", process.cwd());
             res.status(404).send("Giao diện đang được cập nhật, vui lòng thử lại sau!");
         }
     });
